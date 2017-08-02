@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.validation.attributes;
+package org.mule.module.apikit.validation.body.form;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
@@ -129,20 +129,6 @@ public class FormParametersValidatorTestCase extends MuleArtifactFunctionalTestC
                 .expect().response()
                     .body(is("segundo")).statusCode(201)
                 .when().post("/api/multipart");
-    }
-
-    @Test
-    @Ignore("APIKIT-859: Reimplement form-data and url-encoded parameters validation")
-    public void setDefaultFormParameterForUrlencodedRequest() throws Exception
-    {
-        given().header("Content-Type", "application/x-www-form-urlencoded")
-                .formParam("second", "segundo")
-                .formParam("third", "true")
-                .expect()
-                    .response()
-                        .body(is("primo"))
-                        .statusCode(201)
-                .when().post("/api/url-encoded");
     }
 
     @Test

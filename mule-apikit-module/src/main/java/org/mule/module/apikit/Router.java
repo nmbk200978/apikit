@@ -30,9 +30,11 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.construct.FlowConstructAware;
+import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.TypedException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -52,6 +54,13 @@ import reactor.core.publisher.Flux;
 public class Router implements  Processor, FlowConstructAware, Initialisable
 
 {
+    @Inject //TODO delete this after getting resources from resource folder and the flows
+    private MuleContext muleContext;
+
+    @Inject
+    public ExpressionManager expressionManager;
+
+
     @Inject
     private ApikitRegistry registry;
 
@@ -144,7 +153,7 @@ public class Router implements  Processor, FlowConstructAware, Initialisable
             throw ApikitErrorTypes.throwErrorType(new BadRequestException("Error processing request: " + e.getMessage()));
         }
 
-        ValidRequest validRequest = RequestValidator.validate(config, resource, attributes, resolvedVariables, event.getMessage().getPayload().getValue(), charset);
+        ValidRequest validRequest = RequestValidator.validate(config, resource, attributes, resolvedVariables, event.getMessage().getPayload(), charset, expressionManager);
 
         return EventHelper.regenerateEvent(event.getMessage(), eventbuilder, validRequest);
     }

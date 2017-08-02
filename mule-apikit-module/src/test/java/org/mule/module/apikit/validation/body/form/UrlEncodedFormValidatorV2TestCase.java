@@ -86,7 +86,7 @@ public class UrlEncodedFormValidatorV2TestCase {
 
     when(mimeType.getFormParameters()).thenReturn(map);
 
-    UrlencodedFormValidator urlEncodedFormvalidator = new UrlencodedFormValidator(mimeType.getFormParameters());
+    UrlencodedFormV2Validator urlEncodedFormvalidator = new UrlencodedFormV2Validator(mimeType);
 
     Map<String, String> validatedParams = urlEncodedFormvalidator.validate(payload);
 

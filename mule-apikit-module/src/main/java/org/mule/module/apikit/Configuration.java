@@ -31,6 +31,8 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.MuleProperties;
+import org.mule.runtime.core.api.el.ExpressionManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +70,10 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
 
     @Inject
     private ApikitRegistry registry;
+
+    @Inject
+    public ExpressionManager expressionManager;
+
 
     public void initialise() throws InitialisationException
     {

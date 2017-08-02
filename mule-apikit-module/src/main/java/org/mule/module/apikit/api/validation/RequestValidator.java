@@ -14,16 +14,17 @@ import org.mule.module.apikit.validation.AttributesValidator;
 import org.mule.module.apikit.validation.BodyValidator;
 import org.mule.raml.interfaces.model.IResource;
 import org.mule.runtime.core.api.DefaultMuleException;
+import org.mule.runtime.core.api.el.ExpressionManager;
 
 public class RequestValidator {
 
   public static ValidRequest validate(ValidationConfig config, IResource resource, HttpRequestAttributes attributes,
-                                      ResolvedVariables resolvedVariables, Object payload, String charset)
+                                      ResolvedVariables resolvedVariables, Object payload, String charset, ExpressionManager expressionManager)
       throws DefaultMuleException, MuleRestException {
 
     return ValidRequest.builder()
         .withAttributes(AttributesValidator.validateAndAddDefaults(attributes, resource, resolvedVariables))
-        .withBody(BodyValidator.validate(resource.getAction(attributes.getMethod().toLowerCase()), attributes, payload, config, charset))
+        .withBody(BodyValidator.validate(resource.getAction(attributes.getMethod().toLowerCase()), attributes, payload, config, charset, expressionManager))
         .build();
 
   }

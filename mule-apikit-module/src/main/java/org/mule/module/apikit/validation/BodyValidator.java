@@ -25,6 +25,8 @@ import org.mule.module.apikit.validation.body.schema.v1.cache.SchemaCacheUtils;
 import org.mule.module.apikit.validation.body.schema.v2.RestSchemaV2Validator;
 import org.mule.raml.interfaces.model.IAction;
 import org.mule.raml.interfaces.model.IMimeType;
+import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.core.api.el.ExpressionManager;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -39,10 +41,10 @@ public class BodyValidator {
 
 
   public static ValidBody validate(IAction action, HttpRequestAttributes attributes, Object payload,
-                                   ValidationConfig config, String charset)
+                                   ValidationConfig config, String charset, ExpressionManager expressionManager)
       throws BadRequestException {
 
-    ValidBody validBody = new ValidBody(payload);
+    ValidBody validBody = new ValidBody(((TypedValue) payload).getValue());
 
     if (action == null || !action.hasBody()) {
       logger.debug("=== no body types defined: accepting any request content-type");
@@ -78,11 +80,11 @@ public class BodyValidator {
 
     if(requestMimeTypeName.contains("json") || requestMimeTypeName.contains("xml")) {
 
-      validateAsString(config, mimeType, action, requestMimeTypeName, payload, charset);
+      validateAsString(config, mimeType, action, requestMimeTypeName, ((TypedValue) payload).getValue(), charset);
 
     } else if(requestMimeTypeName.contains("multipart/form-data") || requestMimeTypeName.contains("application/x-www-form-urlencoded")) {
 
-      validBody = validateAsMultiPart(config, mimeType, requestMimeTypeName, payload);
+      validBody = validateAsMultiPart(config, mimeType, requestMimeTypeName, payload, expressionManager);
 
     }
 
@@ -117,7 +119,7 @@ public class BodyValidator {
 
   }
 
-  private static ValidBody validateAsMultiPart(ValidationConfig config, IMimeType mimeType, String requestMimeTypeName, Object payload) throws BadRequestException {
+  private static ValidBody validateAsMultiPart(ValidationConfig config, IMimeType mimeType, String requestMimeTypeName, Object payload, ExpressionManager expressionManager) throws BadRequestException {
     ValidBody validBody = new ValidBody(payload);
     FormParametersValidator formParametersValidator = null;
 
@@ -133,7 +135,7 @@ public class BodyValidator {
           formParametersValidator = new FormParametersValidator(new UrlencodedFormV2Validator(mimeType));
 
         } else {
-          formParametersValidator = new FormParametersValidator(new UrlencodedFormValidator(mimeType.getFormParameters()));
+          formParametersValidator = new FormParametersValidator(new UrlencodedFormValidator(mimeType.getFormParameters(), expressionManager));
         }
 
         validBody.setFormParameters(formParametersValidator.validate(payload));
