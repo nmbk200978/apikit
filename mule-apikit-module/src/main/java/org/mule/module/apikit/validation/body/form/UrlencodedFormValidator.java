@@ -14,6 +14,7 @@ import org.mule.runtime.api.el.BindingContext;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,65 +36,74 @@ public class UrlencodedFormValidator implements FormValidatorStrategy<TypedValue
   @Override
   public TypedValue validate(TypedValue payload) throws BadRequestException
   {
-
-    BindingContext.Builder bindingContextBuilder = BindingContext.builder();
-
-    String script = "output application/java --- payload groupBy validateProperty($$ as String, $))";
-
-    bindingContextBuilder.addBinding("payload", payload);
-    TypedValue result;
-    try
-    {
-       result = expressionManager.evaluate(script, bindingContextBuilder.build());
-    }
-    catch (Exception e)
-    {
-      LOGGER.error("Url encoded validation could not be performed. Reason: " + e.getMessage());
-      throw ApikitErrorTypes.throwErrorType(new InvalidFormParameterException("Invalid form parameter exception"));
-
-    }
-    return result;
+    return payload;
   }
+  //  String script = "output application/java --- payload";
+  //
+  //  Map<String, String> requestMap = (HashMap<String,String>) runDataWeaveScript(script, payload).getValue();
+  //
+  //  for (String expectedKey : formParameters.keySet())
+  //  {
+  //    if (formParameters.get(expectedKey).size() != 1)
+  //    {
+  //      //do not perform validation when multi-type parameters are used
+  //      continue;
+  //    }
+  //
+  //    IParameter expected = formParameters.get(expectedKey).get(0);
+  //
+  //    Object actual = requestMap.get(expectedKey);
+  //
+  //    if (actual == null && expected.isRequired())
+  //    {
+  //      throw ApikitErrorTypes.throwErrorType(new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified"));
+  //    }
+  //
+  //    if (actual == null && expected.getDefaultValue() != null)
+  //    {
+  //      requestMap.put(expectedKey, expected.getDefaultValue());
+  //    }
+  //
+  //    if (actual != null && actual instanceof String)
+  //    {
+  //      if (!expected.validate((String) actual))
+  //      {
+  //        String msg = String.format("Invalid value '%s' for form parameter %s. %s",
+  //            actual, expectedKey, expected.message((String) actual));
+  //        throw ApikitErrorTypes.throwErrorType(new InvalidFormParameterException(msg));
+  //      }
+  //    }
+  //  }
+  //
+  //  script = "output application/x-www-form-urlencoded --- payload";
+  //
+  //  TypedValue<Map<String, String>> modifiedPayload = new TypedValue<>(requestMap,null);
+  //  return runDataWeaveScript(script, modifiedPayload);
+  //}
+  //
+  //public TypedValue runDataWeaveScript(String script, TypedValue payload)
+  //{
+  //  BindingContext.Builder bindingContextBuilder = BindingContext.builder();
+  //
+  //  bindingContextBuilder.addBinding("payload", payload);
+  //  TypedValue result;
+  //  try
+  //  {
+  //    result = expressionManager.evaluate(script, bindingContextBuilder.build());
+  //  }
+  //  catch (Exception e)
+  //  {
+  //    LOGGER.error("Url encoded validation could not be performed. Reason: " + e.getMessage());
+  //    throw ApikitErrorTypes.throwErrorType(new InvalidFormParameterException("Invalid form parameter exception"));
+  //  }
+  //  return result;
+  //}
 
-  public boolean validateProperty(String key, String value)
-  {
-    return true;
-  }
-    //for (String expectedKey : formParameters.keySet())
-    //{
-    //  if (formParameters.get(expectedKey).size() != 1)
-    //  {
-    //    //do not perform validation when multi-type parameters are used
-    //    continue;
-    //  }
-    //
-    //  IParameter expected = formParameters.get(expectedKey).get(0);
-    //
-    //  Object actual = payload.get(expectedKey);
-    //
-    //  if (actual == null && expected.isRequired())
-    //  {
-    //    throw ApikitErrorTypes.throwErrorType(new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified"));
-    //  }
-    //
-    //  if (actual == null && expected.getDefaultValue() != null)
-    //  {
-    //    payload.put(expectedKey, expected.getDefaultValue());
-    //  }
-    //
-    //  if (actual != null && actual instanceof String)
-    //  {
-    //    if (!expected.validate((String) actual))
-    //    {
-    //      String msg = String.format("Invalid value '%s' for form parameter %s. %s",
-    //          actual, expectedKey, expected.message((String) actual));
-    //      throw ApikitErrorTypes.throwErrorType(new InvalidFormParameterException(msg));
-    //    }
-    //  }
-    //}
 
- //   return payload;
- // }
+
+
+
+
   //
   //public boolean validateProperty(String key, String value)
   //{

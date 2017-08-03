@@ -9,6 +9,7 @@ package org.mule.module.apikit.api.validation;
 import java.util.Map;
 
 import org.mule.runtime.api.message.MultiPartPayload;
+import org.mule.runtime.api.metadata.TypedValue;
 
 public class ValidBody {
   Object payload;
@@ -32,7 +33,14 @@ public class ValidBody {
   }
 
   public void setFormParameters(Object formParameters) {
-    this.formParameters = formParameters;
+    if (formParameters instanceof TypedValue)
+    {
+      this.formParameters = ((TypedValue) formParameters).getValue();
+    }
+    else
+    {
+      this.formParameters = formParameters;
+    }
   }
 
 }
