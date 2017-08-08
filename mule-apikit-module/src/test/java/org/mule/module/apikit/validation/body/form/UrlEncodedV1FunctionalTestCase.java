@@ -14,7 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @ArtifactClassLoaderRunnerConfig
-public class UrlEncodedFunctionalTestCase extends MuleArtifactFunctionalTestCase
+public class UrlEncodedV1FunctionalTestCase extends MuleArtifactFunctionalTestCase
 {
     @Rule
     public DynamicPort serverPort = new DynamicPort("serverPort");
@@ -35,7 +35,19 @@ public class UrlEncodedFunctionalTestCase extends MuleArtifactFunctionalTestCase
     @Override
     protected String getConfigResources()
     {
-        return "org/mule/module/apikit/validation/formParameters/mule-config.xml";
+        return "org/mule/module/apikit/validation/formParameters/mule-config-v1.xml";
+    }
+
+    @Test
+    public void simpleUrlencodedRequest() throws Exception
+    {
+        given().header("Content-Type", "application/x-www-form-urlencoded")
+                .formParam("first", "primo")
+                .expect()
+                .response()
+                .body(is("first=primo"))
+                .statusCode(201)
+                .when().post("/api/url-encoded-simple");
     }
 
     @Test
@@ -46,8 +58,23 @@ public class UrlEncodedFunctionalTestCase extends MuleArtifactFunctionalTestCase
                 .formParam("third", "true")
                 .expect()
                 .response()
-                .body(is("primo"))
+                .body(is("first=primo"))
                 .statusCode(201)
-                .when().post("/api/url-encoded");
+                .when().post("/api/url-encoded-with-default");
     }
+
+    @Test
+    public void getKeyWithMultipleValuesUrlencodedRequest() throws Exception
+    {
+        given().header("Content-Type", "application/x-www-form-urlencoded")
+                .formParam("second", "segundo")
+                .formParam("second", "segundo2")
+                .formParam("third", "true")
+                .expect()
+                .response()
+                .body(is("second=segundo&second=segundo2&third=true&first=primo"))
+                .statusCode(201)
+                .when().post("/api/url-encoded-duplicated-key");
+    }
+
 }

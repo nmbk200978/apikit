@@ -268,4 +268,9 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     public Schema getXmlSchema(String schemaPath) throws ExecutionException {
         return getXmlSchemaCache().get(schemaPath);
     }
+
+    @Override
+    public ExpressionManager getExpressionManager(){
+        return expressionManager;
+    }
 }

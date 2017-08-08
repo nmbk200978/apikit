@@ -12,6 +12,10 @@ import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.raml.implv2.v10.model.MimeTypeImpl;
 import org.mule.raml.interfaces.model.IMimeType;
 import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.core.api.el.ExpressionManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,18 +26,21 @@ import org.raml.v2.api.model.common.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UrlencodedFormV2Validator implements FormValidatorStrategy<Map<String, String>> {
+public class UrlencodedFormV2Validator implements FormValidatorStrategy<TypedValue> {
   protected final Logger logger = LoggerFactory.getLogger(UrlencodedFormV2Validator.class);
   Map<String, List<IParameter>> formParameters;
   IMimeType actionMimeType;
+  DataWeaveTransformer dataWeaveTransformer;
+  ExpressionManager expressionManager;
 
-  public UrlencodedFormV2Validator(IMimeType actionMimeType) {
+  public UrlencodedFormV2Validator(IMimeType actionMimeType, ExpressionManager expressionManager) {
     this.formParameters = actionMimeType.getFormParameters();
     this.actionMimeType = actionMimeType;
+    this.dataWeaveTransformer = new DataWeaveTransformer(expressionManager);
   }
 
   @Override
-  public Map<String, String> validate(Map<String, String> payload) throws BadRequestException {
+  public TypedValue validate(TypedValue payload) throws BadRequestException {
 
     if (!(actionMimeType instanceof MimeTypeImpl))
     {
@@ -42,10 +49,13 @@ public class UrlencodedFormV2Validator implements FormValidatorStrategy<Map<Stri
     }
 
     String jsonText;
+    DataType originalDataType = payload.getDataType();
+    MultiMap<String, String> requestMap = dataWeaveTransformer.getMultiMapFromPayload(payload);
+
 
     try
     {
-      jsonText = new ObjectMapper().writeValueAsString(payload);
+      jsonText = new ObjectMapper().writeValueAsString(requestMap);
     }
     catch (Exception e)
     {
@@ -64,6 +74,6 @@ public class UrlencodedFormV2Validator implements FormValidatorStrategy<Map<Stri
       throw ApikitErrorTypes.throwErrorType(new InvalidFormParameterException(resultString));
     }
 
-    return payload;
+    return dataWeaveTransformer.getXFormUrlEncodedStream(requestMap, originalDataType);
   }
 }

@@ -22,10 +22,12 @@ public class ValidBody {
   public Object getPayload() {
     if(formParameters == null) {
       return payload;
-    } else if(formParameters instanceof Map || formParameters instanceof MultiPartPayload){
+    }
+    else //if(formParameters instanceof Map || formParameters instanceof MultiPartPayload){
+    {
       return formParameters;
     }
-    return null;
+    //return null;
   }
 
   public void setPayload(Object payload) {

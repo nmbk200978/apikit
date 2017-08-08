@@ -17,7 +17,7 @@ import org.mule.module.apikit.helpers.PayloadHelper;
 import org.mule.module.apikit.validation.body.form.FormParametersValidator;
 import org.mule.module.apikit.validation.body.form.MultipartFormValidator;
 import org.mule.module.apikit.validation.body.form.UrlencodedFormV2Validator;
-import org.mule.module.apikit.validation.body.form.UrlencodedFormValidator;
+import org.mule.module.apikit.validation.body.form.UrlencodedFormV1Validator;
 import org.mule.module.apikit.validation.body.schema.RestSchemaValidator;
 import org.mule.module.apikit.validation.body.schema.v1.RestJsonSchemaValidator;
 import org.mule.module.apikit.validation.body.schema.v1.RestXmlSchemaValidator;
@@ -132,10 +132,10 @@ public class BodyValidator {
 
       } else if (requestMimeTypeName.contains("application/x-www-form-urlencoded")) {
         if (config.isParserV2()) {
-          formParametersValidator = new FormParametersValidator(new UrlencodedFormV2Validator(mimeType));
+          formParametersValidator = new FormParametersValidator(new UrlencodedFormV2Validator(mimeType, expressionManager));
 
         } else {
-          formParametersValidator = new FormParametersValidator(new UrlencodedFormValidator(mimeType.getFormParameters(), expressionManager));
+          formParametersValidator = new FormParametersValidator(new UrlencodedFormV1Validator(mimeType.getFormParameters(), expressionManager));
         }
 
         validBody.setFormParameters(formParametersValidator.validate(payload));

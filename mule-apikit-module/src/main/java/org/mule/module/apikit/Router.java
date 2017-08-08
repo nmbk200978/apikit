@@ -58,10 +58,6 @@ public class Router implements  Processor, FlowConstructAware, Initialisable
     private MuleContext muleContext;
 
     @Inject
-    public ExpressionManager expressionManager;
-
-
-    @Inject
     private ApikitRegistry registry;
 
     private String configRef;
@@ -153,7 +149,7 @@ public class Router implements  Processor, FlowConstructAware, Initialisable
             throw ApikitErrorTypes.throwErrorType(new BadRequestException("Error processing request: " + e.getMessage()));
         }
 
-        ValidRequest validRequest = RequestValidator.validate(config, resource, attributes, resolvedVariables, event.getMessage().getPayload(), charset, expressionManager);
+        ValidRequest validRequest = RequestValidator.validate(config, resource, attributes, resolvedVariables, event.getMessage().getPayload(), charset, config.getExpressionManager());
 
         return EventHelper.regenerateEvent(event.getMessage(), eventbuilder, validRequest);
     }

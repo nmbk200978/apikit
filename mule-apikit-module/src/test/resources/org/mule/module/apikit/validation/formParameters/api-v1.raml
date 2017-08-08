@@ -17,8 +17,16 @@ title: Parameters API
             type: boolean
     responses:
       201: ~
-
-/url-encoded:
+/url-encoded-simple:
+  post:
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          first:
+            type: string
+    responses:
+      201: ~
+/url-encoded-with-default:
   post:
     body:
       application/x-www-form-urlencoded:
@@ -33,7 +41,21 @@ title: Parameters API
             type: boolean
     responses:
       201: ~
-
+/url-encoded-duplicated-key:
+  post:
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          first:
+            type: string
+            default: primo
+          second:
+            type: string
+            required: true
+          third:
+            type: boolean
+    responses:
+      201: ~
 /uploadImage:
   post:
     body:
